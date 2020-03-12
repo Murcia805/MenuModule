@@ -1,0 +1,322 @@
+<div class="inicio">
+    <header class="App-header">
+        <div class="Menu">
+            <img src="../../../assets/Revit Blanco sin fondo.png" class="App-logo" alt="logo" />
+            <div class="ui inverted segment">
+                <div class="ui inverted pointing secondary menu">
+                    <a class="item active">Administrador</a>
+                </div>
+            </div>
+        </div>
+        <div class="UserInformation">
+            {{nombre}}
+        </div>
+        <div class="LogOut">
+            <button (click)="redirectProfile()" class="circular ui icon button">
+            <i class="icon log out"></i>
+          </button>
+        </div>
+
+    </header>
+    <div class="decorBar"></div>
+    <div class="admin">
+        <div class="ui vertical stripe segment " style="margin-top:2em">
+            <h1>Platos Fuertes</h1>
+        </div>
+
+        <div class="ui vertical stripe segment " style="margin-top:2em">
+            <div class="ui segments">
+                <div class="ui secondary segment">
+                    <button (click)="abrirModal('' ,3)" class="ui positive basic button fluid">Agregar</button>
+                </div>
+                <div class="ui segment">
+                    <div class="ui three cards">
+                        <div class="card" *ngFor="let plato of listPlatos; let i = index">
+                            <div class="content">
+                                <div class="header">{{plato.platename}}</div>
+                                <div class="description">
+                                    {{ plato.platedescription }}
+                                </div>
+                            </div>
+                            <div class="extra content" *ngIf="plato.imageplate != null">
+                                <div class="center aligned author">
+                                    <img class="ui tiny image" src="{{ plato.imageplate }}">
+                                </div>
+                            </div>
+                            <div class="extra content">
+                                <div class="ui two buttons">
+                                    <button (click)="abrirModal(plato.pk_idplate,2,i)" class="ui basic green button"><i class="edit icon"></i></button>
+                                    <div class="ui basic red button"><i class="trash icon"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui vertical stripe segment " style="margin-top:2em">
+            <h1>Ingredientes</h1>
+        </div>
+
+        <div class="ui vertical stripe segment " style="margin-top:2em">
+            <div class="ui segments">
+                <div class="ui secondary segment">
+                    <button (click)="abrirModal('' ,4)" class="ui positive basic button fluid">Agregar</button>
+                </div>
+                <div class="ui segment">
+                    <div class="ui three cards">
+                        <div class="card" *ngFor="let ingrediente of listIngredientes; let i = index">
+                            <div class="content">
+                                <div class="header">{{ ingrediente.ingredientname }}</div>
+                                <div class="description">
+                                    {{ ingrediente.description }}
+                                </div>
+                            </div>
+                            <div class="extra content">
+                                <div class="ui two buttons">
+                                    <button (click)="abrirModal(0, 1,i)" class="ui basic green button"><i class="edit icon"></i></button>
+                                    <div class="ui basic red button"><i class="trash icon"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<sui-modal *ngIf="show" [isClosable]="true" (dismissed)="show = false" #modal>
+    <div class="header">{{ actualIngrediente.ingredientname }}</div>
+    <div class="scrolling content">
+        <div class="ui segment">
+            <form class="ui form">
+                <div class="field">
+                    <label>Nombre Ingrediente</label>
+                    <input #nombreIngrediente type="text" placeholder="Cebolla..." value="{{ actualIngrediente.ingredientname }}">
+                </div>
+                <div class="field">
+                    <label>Descripción</label>
+                    <textarea rows="2" #descripcionIngrediente>{{ actualIngrediente.description }}</textarea>
+                </div>
+                <div class="ui segment">
+                    <div class="field">
+                        <sui-checkbox [(ngModel)]="checkBox" [ngModelOptions]="{standalone: true}" class="toggle">Estado</sui-checkbox>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="actions">
+        <button class="ui red button" (click)="show = false">Cancel</button>
+        <button class="ui green button" (click)="updateIngrediente(nombreIngrediente.value,descripcionIngrediente.value); show = false" autofocus>Guardar</button>
+    </div>
+</sui-modal>
+
+<sui-modal *ngIf="show1" [isClosable]="true" (dismissed)="show1 = false" #modal1>
+    <div class="header">{{ actualPlato.platename }}</div>
+    <div class="scrolling content">
+        <sui-accordion class="styled fluid">
+            <sui-accordion-panel [isOpen]="true">
+                <div title>
+                    <i class="dropdown icon"></i> Datos
+                </div>
+                <div content>
+                    <div class="ui segment">
+                        <form class="ui form">
+                            <div class="field">
+                                <label>Nombre Plato</label>
+                                <input #nombrePlato type="text" value="{{ actualPlato.platename }}">
+                            </div>
+                            <div class="two fields">
+                                <div class="field ">
+                                    <label>ID</label>
+                                    <div class="ui disabled input">
+                                        <input type="text" value="{{ actualPlato.pk_idplate }}">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label>Tipo</label>
+                                    <sui-select class="selection" [(ngModel)]="selectedOption" [ngModelOptions]="{standalone: true}" [options]="selectorTipo.opciones" labelField="name" valueField="id" #selectCliente>
+                                        <sui-select-option *ngFor="let option of selectCliente.availableOptions" [value]="option"></sui-select-option>
+                                    </sui-select>
+                                </div>
+                            </div>
+                            <div class="two fields">
+                                <div class="field">
+                                    <label>Precio</label>
+                                    <div class="ui labeled input">
+                                        <div class="ui label">$</div>
+                                        <input #valorPlato type="number" value="{{ actualPlato.amount }}">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label>Foto</label>
+                                    <div class="ui labeled input">
+                                        <div class="ui label"><i class="image outline icon"></i></div>
+                                        <input #fotoPlato type="text" placeholder="URL" value="{{ actualPlato.imageplate }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Descripción</label>
+                                <textarea rows="2" #descripcionPlato>{{ actualPlato.platedescription }}</textarea>
+                            </div>
+                            <div class="ui segment">
+                                <div class="field">
+                                    <sui-checkbox [(ngModel)]="checkBox" [ngModelOptions]="{standalone: true}" class="toggle">Estado</sui-checkbox>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </sui-accordion-panel>
+            <sui-accordion-panel>
+                <div title>
+                    <i class="dropdown icon"></i> Ingredientes
+                </div>
+                <div content>
+                    <div class="ui segment">
+                        <div class="ui three cards">
+                            <div class="card" *ngFor="let ingrediente of listIngredientes; let i = index">
+                                <div class="content">
+                                    <div class="header">{{ ingrediente.ingredientname }}</div>
+                                    <div class="description">
+                                        {{ ingrediente.description }}
+                                    </div>
+                                </div>
+                                <button *ngIf="getIngredienteNuevoEstado(ingrediente.pk_idingredient)  == false" (click)="anadirIngredientePlato(ingrediente.pk_idingredient)" class="ui green bottom attached button">
+                                    <i class="add icon"></i> Añadir
+                                </button>
+                                <button *ngIf="getIngredienteNuevoEstado(ingrediente.pk_idingredient)" (click)="quitarIngredientePlato(ingrediente.pk_idingredient)" class="ui red bottom attached button">
+                                    <i class="trash icon"></i> Quitar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </sui-accordion-panel>
+        </sui-accordion>
+    </div>
+    <div class="actions">
+        <button class="ui red button" (click)="show1 = false">Cancel</button>
+        <button class="ui green button" (click)="updatePlate(actualPlato,nombrePlato.value,valorPlato.value,fotoPlato.value,descripcionPlato.value); show1 = false" autofocus>Guardar</button>
+    </div>
+</sui-modal>
+
+<sui-modal *ngIf="show2" [isClosable]="true" (dismissed)="show2 = false" #modal1>
+    <div class="header">Crear Plato</div>
+    <div class="scrolling content">
+        <sui-accordion class="styled fluid">
+            <sui-accordion-panel [isOpen]="true">
+                <div title>
+                    <i class="dropdown icon"></i> Datos
+                </div>
+                <div content>
+                    <div class="ui segment">
+                        <form class="ui form">
+                            <div class="field">
+                                <label>Nombre Plato</label>
+                                <input #nombrePlato type="text" placeholder="Ensalada Cesar...">
+                            </div>
+                            <div class="two fields">
+                                <div class="field ">
+                                    <label>ID</label>
+                                    <div class="ui disabled input">
+                                        <input type="text">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label>Tipo</label>
+                                    <sui-select class="selection" [(ngModel)]="selectedOption" [ngModelOptions]="{standalone: true}" [options]="selectorTipo.opciones" labelField="name" valueField="id" #selectCliente>
+                                        <sui-select-option *ngFor="let option of selectCliente.availableOptions" [value]="option"></sui-select-option>
+                                    </sui-select>
+                                </div>
+                            </div>
+                            <div class="two fields">
+                                <div class="field">
+                                    <label>Precio</label>
+                                    <div class="ui labeled input">
+                                        <div class="ui label">$</div>
+                                        <input #valorPlato type="number" placeholder="10000">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label>Foto</label>
+                                    <div class="ui labeled input">
+                                        <div class="ui label"><i class="image outline icon"></i></div>
+                                        <input #fotoPlato type="text" placeholder="URL">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Descripción</label>
+                                <textarea rows="2" #descripcionPlato></textarea>
+                            </div>
+                            <div class="ui segment">
+                                <div class="field">
+                                    <sui-checkbox [(ngModel)]="checkBox" [ngModelOptions]="{standalone: true}" class="toggle">Estado</sui-checkbox>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </sui-accordion-panel>
+            <sui-accordion-panel>
+                <div title>
+                    <i class="dropdown icon"></i> Ingredientes
+                </div>
+                <div content>
+                    <div class="ui segment">
+                        <div class="ui three cards">
+                            <div class="card" *ngFor="let ingrediente of listIngredientes; let i = index">
+                                <div class="content">
+                                    <div class="header">{{ ingrediente.ingredientname }}</div>
+                                    <div class="description">
+                                        {{ ingrediente.description }}
+                                    </div>
+                                </div>
+                                <button *ngIf="getIngredienteNuevoEstado(ingrediente.pk_idingredient)  == false" (click)="anadirIngredientePlato(ingrediente.pk_idingredient)" class="ui green bottom attached button">
+                                        <i class="add icon"></i> Añadir
+                                </button>
+                                <button *ngIf="getIngredienteNuevoEstado(ingrediente.pk_idingredient)" (click)="quitarIngredientePlato(ingrediente.pk_idingredient)" class="ui red bottom attached button">
+                                    <i class="trash icon"></i> Quitar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </sui-accordion-panel>
+        </sui-accordion>
+    </div>
+    <div class="actions">
+        <button class="ui green button" (click)="createPlato(nombrePlato.value,valorPlato.value,fotoPlato.value,descripcionPlato.value);show2 = false" autofocus>Guardar</button>
+    </div>
+</sui-modal>
+
+<sui-modal *ngIf="show3" [isClosable]="true" (dismissed)="show3 = false" #modal>
+    <div class="header">Crear Ingrediente</div>
+    <div class="scrolling content">
+        <div class="ui segment">
+            <form class="ui form">
+                <div class="field">
+                    <label>Nombre Ingrediente</label>
+                    <input #nombreIngrediente type="text" placeholder="Cebolla...">
+                </div>
+                <div class="field">
+                    <label>Descripción</label>
+                    <textarea rows="2" #descripcionIngrediente></textarea>
+                </div>
+                <div class="ui segment">
+                    <div class="field">
+                        <sui-checkbox [(ngModel)]="checkBox" [ngModelOptions]="{standalone: true}" class="toggle">Estado</sui-checkbox>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="actions">
+        <button class="ui red button" (click)="show3 = false">Cancelar</button>
+        <button class="ui green button" (click)="createIngrediente(nombreIngrediente.value, descripcionIngrediente.value)" autofocus>Guardar</button>
+    </div>
+</sui-modal>

@@ -1,0 +1,207 @@
+<div class="inicio">
+    <header class="App-header">
+        <div class="Menu" *ngIf="estaLogueado == 1">
+            <img src="../../../assets/Revit Blanco sin fondo.png" class="App-logo" alt="logo" />
+            <div class="ui inverted segment">
+                <div class="ui inverted pointing secondary menu">
+                    <a class="item active">Menu</a>
+                    <a class="item" (click)="redirectProfile()">Mi Perfil</a>
+                    <a class="item" (click)="redirectReservas()">Reservas Publicas</a>
+                    <a class="item" (click)="redirectBuscar()">Buscar Restaurantes</a>
+                </div>
+            </div>
+        </div>
+        <div class="UserInformation" *ngIf="estaLogueado == 1">
+            {{nombre}}
+        </div>
+        <div class="LogOut" *ngIf="estaLogueado == 1">
+            <button (click)="redirectProfile()" class="circular ui icon button">
+                <i class="icon log out"></i>
+          </button>
+        </div>
+
+        <div class="Menu" *ngIf="estaLogueado == 0">
+            <img src="../../../assets/Revit Blanco sin fondo.png" class="App-logo" alt="logo" />
+            <div class="ui inverted segment">
+                <div class="ui inverted pointing secondary menu">
+                    <a class="item active">Menu</a>
+                    <a class="item" (click)="redirectProfile()">Iniciar Sesión</a>
+                </div>
+            </div>
+        </div>
+
+
+    </header>
+    <div class="decorBar"></div>
+    <div style="flex: 1 !important;">
+        <div class="primeraetapa">
+            <div class="ui grid">
+                <div class="two wide column back">
+                    <a class="back" (click)="atras(this.activeCanvas-1)">
+                        <div class="back">
+                            <i class="fas fa-chevron-left centrar" style="color: white;"></i>
+                        </div>
+                    </a>
+                </div>
+                <div class="twelve wide column">
+                    <div class="centrar" [suiTransition]="transitionController1">
+                        <div class="ui text container centrar">
+                            <h1 class="ui inverted header">Escoje tu menu</h1>
+                            <h2>¿Que momento del dia desea comer?</h2>
+                            <div class="ui two buttons massive">
+                                <button class="ui button" (click)="getPlatosByTime(1); adelante(2)">Almuerzo</button>
+                                <div class="or" data-text="o"></div>
+                                <button class="ui yellow button" (click)="getPlatosByTime(2); adelante(2)">Cena</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="centrar" [suiTransition]="transitionController2">
+                        <div class="ui text container centrar">
+                            <h1 class="ui inverted header">Escoje tu Plato</h1>
+                            <div class="ui four stackable cards">
+                                <div class="card" *ngFor="let plato of listaPlatos; let i = index">
+                                    <div class="image">
+                                        <img src="{{ plato.imageplate }}">
+                                    </div>
+                                    <div class="content">
+                                        <div class="header">{{ plato.platename }}</div>
+                                    </div>
+                                    <div class="ui buttons" *ngIf="siguiente != 0">
+                                        <button (click)="agregarPlatoOrden(i, plato.pk_idplate)" class="ui vertical animated button attached positive " tabindex="0">
+                                    <div class="hidden content">Comprar</div>
+                                    <div class="visible content">
+                                        <i class="shop icon"></i>
+                                    </div>
+                                </button>
+                                        <button (click)="abrirModal(1,plato)" class="ui vertical animated button attached" tabindex="0">
+                                    <div class="hidden content">Info</div>
+                                    <div class="visible content">
+                                        <i class="edit icon"></i>
+                                    </div>
+                                </button>
+                                    </div>
+                                    <button *ngIf="siguiente == 0" (click)="abrirModal(1,plato)" class="ui vertical animated button attached" tabindex="0">
+                                <div class="hidden content">Info</div>
+                                <div class="visible content">
+                                    <i class="edit icon"></i>
+                                </div>
+                            </button>
+                                </div>
+                            </div>
+
+                            <div *ngIf="siguiente != 0 && contPedidos != 0" class="ui labeled button fluid" tabindex="0" style="margin-top:1rem;margin-bottom: 2rem;">
+                                <button class="ui positive button fluid" (click)="adelante(3)">
+                            <i class="shop icon"></i> Comprar
+                        </button>
+                                <a class="ui basic left pointing blue label" *ngIf="contPedidos != 0">
+                          {{ contPedidos }}
+                        </a>
+                            </div>
+                            <button *ngIf="siguiente == 0" class="fluid ui button" style="margin-top:1rem;margin-bottom: 2rem;" (click)="redirectRestaurante()">Devolverse a Restaurante</button>
+                        </div>
+                    </div>
+                    <div class="centrar" [suiTransition]="transitionController3">
+                        <div class="ui text container centrar">
+                            <h1 class="ui inverted header">Modificar</h1>
+                            <div class="ui segment items scroll" style="text-align: left;">
+                                <div class="item" *ngFor="let pedido of tempPedido; let i = index">
+                                    <a class="ui tiny image">
+                                        <img src="{{ pedido.infoPlato.imageplate }}">
+                                    </a>
+                                    <div class="middle aligned content">
+                                        <div class="header">{{ pedido.infoPlato.platename }}</div>
+                                    </div>
+                                    <div class="extra">
+                                        <div class="ui buttons right floated">
+                                            <button class="ui button" (click)="abrirModal(3,pedido,i)">Modificar</button>
+                                            <button class="ui red button" (click)="eliminarPedido(i)">Eliminar</button>
+                                        </div>
+                                        <ng-container *ngFor="let item of pedido.listaIngredientes">
+                                            <div class="ui label" *ngIf="item.active == true">{{ item.ingredientname }}</div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui labeled button fluid" tabindex="0">
+                                <button class="ui button fluid" (click)="finalizar()">Terminar Reserva</button>
+                                <a class="ui basic left pointing label">${{total}}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
+        <div class="two wide column">
+            <a class="back" *ngIf="activeCanvas > 2">
+                <div class="back">
+                    <i class="fas fa-chevron-right centrar" style="color: white;"></i>
+                </div>
+            </a>
+        </div>
+ -->
+
+<sui-modal *ngIf="show" [isClosable]="true" (dismissed)="show = false" #modal>
+    <div class="header">{{ activoPlato.platename }}</div>
+    <div class="scrolling content">
+        <div class="ui three stackable cards">
+            <div class="card" *ngFor="let ingrediente of listaIngredientes">
+                <div class="content">
+                    <div class="header">{{ ingrediente.ingredientname }}</div>
+                    <div class="description">{{ ingrediente.description }}</div>
+                </div>
+                <button (click)="ingrediente.active = false" *ngIf="ingrediente.active == true" class="ui red bottom attached button">
+                    <i class="trash icon"></i> Quitar
+                </button>
+                <button (click)="ingrediente.active = true" *ngIf="ingrediente.active == false" class="ui green bottom attached button">
+                    <i class="add icon"></i> Añadir
+                </button>
+            </div>
+        </div>
+        <div class="ui divider"></div>
+        <div class="ui form">
+            <div class="field">
+                <label>Comentarios</label>
+                <input type="text" #comentarioPlatoAvanzado>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <button class="ui red button" (click)="show = false">Cancel</button>
+        <button *ngIf="siguiente != 0" class="ui green button" (click)="guardarPlatoAvanzado(comentarioPlatoAvanzado.value)" autofocus>Guardar</button>
+    </div>
+</sui-modal>
+
+<sui-modal *ngIf="show1" [isClosable]="true" (dismissed)="show1 = false" #modal>
+    <div class="header">{{ actualPedido.infoPlato.platename }}</div>
+    <div class="scrolling content">
+        <div class="ui three stackable cards">
+            <div class="card" *ngFor="let ingrediente of listaIngredientes">
+                <div class="content">
+                    <div class="header">{{ ingrediente.ingredientname }}</div>
+                    <div class="description">{{ ingrediente.description }}</div>
+                </div>
+                <button (click)="ingrediente.active = false" *ngIf="ingrediente.active == true" class="ui red bottom attached button">
+                    <i class="trash icon"></i> Quitar
+                </button>
+                <button (click)="ingrediente.active = true" *ngIf="ingrediente.active == false" class="ui green bottom attached button">
+                    <i class="add icon"></i> Añadir
+                </button>
+            </div>
+        </div>
+        <div class="ui divider"></div>
+        <div class="ui form">
+            <div class="field">
+                <label>Comentarios</label>
+                <input type="text" #comentarioPlatoAvanzado value="{{ actualPedido.comentario }}">
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <button class="ui red button" (click)="show1 = false">Cancel</button>
+        <button class="ui green button" (click)="guardarPlatoAvanzado1(comentarioPlatoAvanzado.value)" autofocus>Guardar</button>
+    </div>
+</sui-modal>

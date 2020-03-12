@@ -1,0 +1,62 @@
+.admin {
+    height: auto;
+    width: auto;
+    background: white;
+    padding: 1.5rem;
+    display: 0 !important;
+}
+
+html {
+    height: auto !important;
+}
+
+.App-header {
+    background-color: #1c1d1f;
+    height: 80px;
+    display: flex;
+    box-shadow: 2px 2px 5px #999;
+    flex-direction: row;
+}
+
+.App-logo {
+    height: 90px;
+    margin-right: 10px;
+    margin-left: 20px;
+    padding-bottom: 15px;
+}
+
+.Menu {
+    display: flex;
+    flex-direction: row;
+    width: 82%;
+}
+
+.decorBar {
+    width: 100%;
+    height: 5rem;
+    background-color: #EFB810;
+}
+
+.UserInformation {
+    flex-direction: column;
+    margin-top: 18px;
+    display: flex;
+    color: white;
+    text-align: center;
+    margin-left: auto;
+    margin-right: 25px;
+}
+
+.LogOut {
+    margin-Top: 20px;
+    margin-left: 0px;
+    float: right;
+    align-Content: center;
+    margin-right: 15px;
+}
+
+.inicio {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
